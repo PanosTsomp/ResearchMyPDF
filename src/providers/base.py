@@ -1,0 +1,1 @@
+# Its a contract so any model or API can work with the app
