@@ -4,4 +4,10 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "ollama>=0.6.1",
+    "pydantic>=2.12.5",
+    "pymupdf>=1.27.2.2",
+    "rich>=14.3.4",
+    "typer>=0.24.1",
+]
