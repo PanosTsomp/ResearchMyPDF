@@ -1,0 +1,1 @@
+#Takes the final structured output and writes it to the out/ folder

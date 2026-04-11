@@ -1,0 +1,1 @@
+#Takes a path to a PDF file and returns the raw text content.
