@@ -165,6 +165,7 @@ def _find_headers(lines, body_size, keywords, threshold=4):
         and _score_span(line["text"], line["size"], line["is_bold"],
                        body_size, keywords) >= threshold
         and len(" ".join(line["text"].split())) < 80
+        and len(" ".join(line["text"].split())) > 3
     ]
 
 
@@ -307,9 +308,11 @@ def _is_metadata(text: str) -> bool:
     if re.search(r'\bv\d+\b', t): return True
     if re.search(r'\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\b', t): return True
     if re.search(r'\b10\.\d{4}/', t): return True
-    if re.search(r'\bfig\.', t): return True      # ← add this
-    if re.search(r'\btable\.', t): return True    # ← add this
-    if re.search(r'\bet al\.', t): return True    # ← add this
+    if re.search(r'\bfig\.', t): return True
+    if re.search(r'\btable\.', t): return True
+    if re.search(r'\bet al\.', t): return True
+    if re.search(r'^\d+\.\s+[A-Z][a-z]+-[A-Z]', t): return True
+    if text.strip() in ("RESEARCH", "Open Access", "ORIGINAL"): return True
     digit_ratio = sum(c.isdigit() for c in text) / max(len(text), 1)
     if digit_ratio > 0.3: return True
     return False
@@ -319,7 +322,7 @@ def _is_metadata(text: str) -> bool:
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    result = extract_sections("papers/GradCam.pdf")
+    result = extract_sections("papers/s12903-022-02436-3.pdf")
     print(f"Title:        {result.title}\n")
     print(f"Abstract:     {result.abstract[:200]}\n")
     print(f"Introduction: {result.introduction[:200]}\n")
