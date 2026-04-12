@@ -30,41 +30,38 @@ class PaperSummary:
 # Prompt builder
 # ---------------------------------------------------------------------------
 
+MAX_SECTION = 1500
+
 def _build_prompt(sections: PaperSections) -> str:
-    """
-    Build the prompt we send to the LLM.
-    We include all key sections so the AI has full context.
-    """
     parts = []
 
     if sections.abstract:
-        parts.append(f"ABSTRACT:\n{sections.abstract}")
+        parts.append(f"ABSTRACT:\n{sections.abstract[:MAX_SECTION]}")
     if sections.introduction:
-        parts.append(f"INTRODUCTION:\n{sections.introduction}")
+        parts.append(f"INTRODUCTION:\n{sections.introduction[:MAX_SECTION]}")
     if sections.methodology:
-        parts.append(f"METHODOLOGY:\n{sections.methodology}")
+        parts.append(f"METHODOLOGY:\n{sections.methodology[:MAX_SECTION]}")
     if sections.results:
-        parts.append(f"RESULTS:\n{sections.results}")
+        parts.append(f"RESULTS:\n{sections.results[:MAX_SECTION]}")
     if sections.conclusion:
-        parts.append(f"CONCLUSION:\n{sections.conclusion}")
+        parts.append(f"CONCLUSION:\n{sections.conclusion[:MAX_SECTION]}")
 
     context = "\n\n".join(parts)
 
     return (
-        "You are a research assistant. Your job is to extract key information "
-        "from a research paper accurately and completely, without leaving anything out.\n\n"
-        "Based on the following sections from a research paper, extract the information "
-        "and return it as valid JSON only. No preamble, no explanation, just JSON.\n\n"
-        "Return this exact structure:\n"
-        "{\n"
-        '  "problem": "What specific problem or question does this paper address?",\n'
-        '  "methodology": "What methods, models, or approaches were used?",\n'
-        '  "key_findings": "What were the main results or conclusions?",\n'
-        '  "limitations": "What limitations or future work did the authors mention?",\n'
-        '  "confidence": "high, medium, or low based on how complete the provided text is"\n'
-        "}\n\n"
+        "You are a research assistant extracting key information from a paper.\n\n"
         f"Paper title: {sections.title}\n\n"
-        f"{context}"
+        f"{context}\n\n"
+        "---\n"
+        "Based on the paper above, return ONLY this JSON object, nothing else. "
+        "No markdown, no explanation, just the raw JSON:\n"
+        "{\n"
+        '  "problem": "what problem does this paper solve",\n'
+        '  "methodology": "what methods or approaches were used",\n'
+        '  "key_findings": "what were the main results",\n'
+        '  "limitations": "what limitations were mentioned",\n'
+        '  "confidence": "high, medium, or low"\n'
+        "}"
     )
 
 
@@ -73,13 +70,18 @@ def _build_prompt(sections: PaperSections) -> str:
 # ---------------------------------------------------------------------------
 
 def _parse_response(content: str) -> dict:
-    """
-    Try to parse the LLM response as JSON.
-    Falls back to regex extraction if the model adds extra text around the JSON.
-    """
     # Direct parse first
     try:
         return json.loads(content)
+    except json.JSONDecodeError:
+        pass
+
+    # Try to repair incomplete JSON by closing it
+    repaired = content.strip()
+    if not repaired.endswith("}"):
+        repaired += "\n}"
+    try:
+        return json.loads(repaired)
     except json.JSONDecodeError:
         pass
 
@@ -91,7 +93,7 @@ def _parse_response(content: str) -> dict:
         except json.JSONDecodeError:
             pass
 
-    # Give up — return empty structure so pipeline doesn't crash
+    # Give up
     return {
         "problem": "",
         "methodology": "",
@@ -106,11 +108,10 @@ def _parse_response(content: str) -> dict:
 # ---------------------------------------------------------------------------
 
 def summarize(sections: PaperSections, provider: LLMProvider) -> PaperSummary:
-    """
-    Generate a structured summary of a paper's sections using the given LLM provider.
-    """
     prompt = _build_prompt(sections)
+    print(f"DEBUG prompt length: {len(prompt)} chars")
     raw_response = provider.summarize(prompt)
+    print(f"DEBUG raw response:\n{raw_response[:2000]}")
     data = _parse_response(raw_response)
 
     return PaperSummary(
@@ -131,7 +132,7 @@ if __name__ == "__main__":
     from extract import extract_sections
     from providers.ollama_provider import OllamaProvider
 
-    sections = extract_sections("papers/GradCam.pdf")
+    sections = extract_sections("papers/LatIA_2025_117.pdf")
     provider = OllamaProvider()
     summary = summarize(sections, provider)
 

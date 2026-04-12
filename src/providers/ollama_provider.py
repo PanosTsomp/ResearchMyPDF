@@ -12,5 +12,6 @@ class OllamaProvider:
         response = ollama.chat(
             model=self.model,
             messages=[{"role": "user", "content": prompt}],
+            options={"num_predict": 2048}
         )
         return response["message"]["content"]
