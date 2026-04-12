@@ -320,7 +320,7 @@ def _is_metadata(text: str) -> bool:
 # ---------------------------------------------------------------------------
 # Quick test
 # ---------------------------------------------------------------------------
-
+"""
 if __name__ == "__main__":
     result = extract_sections("papers/s12903-022-02436-3.pdf")
     print(f"Title:        {result.title}\n")
@@ -330,3 +330,5 @@ if __name__ == "__main__":
     print(f"Results:      {result.results[:200]}\n")
     print(f"Conclusion:   {result.conclusion[:200]}\n")
     print(f"All sections found: {list(result.raw_sections.keys())}")
+
+"""
