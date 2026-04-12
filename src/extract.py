@@ -89,6 +89,8 @@ def _get_title(doc: pymupdf.Document) -> str:
                 text = span["text"].strip()
                 if not text:
                     continue
+                if _is_metadata(text):
+                    continue
                 if size > largest:
                     largest = size
                     parts = [text]
@@ -152,15 +154,11 @@ def _build_lines(doc: pymupdf.Document) -> list[dict]:
     return lines
 
 
-def _find_headers(lines: list[dict], body_size: float,
-                  keywords: list[str], threshold: int = 4) -> list[int]:
-    """
-    Return the indices of lines that score at or above threshold.
-    Threshold 4 means at minimum: bold + bigger than body.
-    """
+def _find_headers(lines, body_size, keywords, threshold=4):
     return [
         i for i, line in enumerate(lines)
-        if _score_span(line["text"], line["size"], line["is_bold"],
+        if not _is_metadata(line["text"])
+        and _score_span(line["text"], line["size"], line["is_bold"],
                        body_size, keywords) >= threshold
     ]
 
