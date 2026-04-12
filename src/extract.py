@@ -294,6 +294,19 @@ def extract_sections(pdf_path: str) -> PaperSections:
 
     return paper
 
+# ---------------------------------------------------------------------------
+# See If it has any metadata and ignore it
+# ---------------------------------------------------------------------------
+def _is_metadata(text: str) -> bool:
+    t = text.lower()
+    if "arxiv" in t: return True
+    if re.search(r'\[.*?\]', t): return True
+    if re.search(r'\bv\d+\b', t): return True
+    if re.search(r'\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\b', t): return True
+    if re.search(r'\b10\.\d{4}/', t): return True  # DOI
+    digit_ratio = sum(c.isdigit() for c in text) / max(len(text), 1)
+    if digit_ratio > 0.3: return True
+    return False
 
 # ---------------------------------------------------------------------------
 # Quick test
@@ -308,3 +321,17 @@ if __name__ == "__main__":
     print(f"Results:      {result.results[:200]}\n")
     print(f"Conclusion:   {result.conclusion[:200]}\n")
     print(f"All sections: {list(result.raw_sections.keys())}")
+
+
+if __name__ == "__main__":
+    doc = pymupdf.open("papers/GradCam.pdf")
+    body_size = _body_size(doc)
+    lines = _build_lines(doc)
+    
+    print(f"Body size detected: {body_size}")
+    print("\n--- Candidate headers ---")
+    for i, line in enumerate(lines):
+        score = _score_span(line["text"], line["size"], 
+                           line["is_bold"], body_size, _BASE_KEYWORDS)
+        if score >= 4:
+            print(f"Score {score} | Page {line['page']} | {line['text']}")
