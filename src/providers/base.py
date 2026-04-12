@@ -1,5 +1,4 @@
 # Its a contract so any model or API can work with the app
-
 # The contract every LLM provider must follow.
 # No inheritance needed — if it has these methods, it works.
 

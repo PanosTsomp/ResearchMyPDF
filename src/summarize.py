@@ -109,9 +109,9 @@ def _parse_response(content: str) -> dict:
 
 def summarize(sections: PaperSections, provider: LLMProvider) -> PaperSummary:
     prompt = _build_prompt(sections)
-    print(f"DEBUG prompt length: {len(prompt)} chars")
+    #print(f"DEBUG prompt length: {len(prompt)} chars")
     raw_response = provider.summarize(prompt)
-    print(f"DEBUG raw response:\n{raw_response[:2000]}")
+    #print(f"DEBUG raw response:\n{raw_response[:2000]}")
     data = _parse_response(raw_response)
 
     return PaperSummary(
