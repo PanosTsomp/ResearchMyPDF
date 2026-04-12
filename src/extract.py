@@ -1,4 +1,4 @@
-#Find the Methodology and Results sections specifically. Extract the important context
+#Find the sections of intrest specifically. Extract the important context
 
 import json
 import re
