@@ -143,6 +143,8 @@ def _build_lines(doc: pymupdf.Document) -> list[dict]:
             for line in block["lines"]:
                 text = " ".join(s["text"] for s in line["spans"])
                 text = " ".join(text.split())  # ← collapse spaces here
+                text = " ".join(text.split())
+                text = re.sub(r'(\w)-\s+(\w)', r'\1\2', text)
                 if not text:
                     continue
                 first = line["spans"][0]
@@ -151,6 +153,7 @@ def _build_lines(doc: pymupdf.Document) -> list[dict]:
                     "text": text,
                     "size": round(first["size"], 1),
                     "is_bold": bool(first["flags"] & 16),
+                    
                 })
     return lines
 
