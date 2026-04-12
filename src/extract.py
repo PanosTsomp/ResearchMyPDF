@@ -160,6 +160,7 @@ def _find_headers(lines, body_size, keywords, threshold=4):
         if not _is_metadata(line["text"])
         and _score_span(line["text"], line["size"], line["is_bold"],
                        body_size, keywords) >= threshold
+        and len(" ".join(line["text"].split())) < 80
     ]
 
 
@@ -301,7 +302,10 @@ def _is_metadata(text: str) -> bool:
     if re.search(r'\[.*?\]', t): return True
     if re.search(r'\bv\d+\b', t): return True
     if re.search(r'\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\b', t): return True
-    if re.search(r'\b10\.\d{4}/', t): return True  # DOI
+    if re.search(r'\b10\.\d{4}/', t): return True
+    if re.search(r'\bfig\.', t): return True      # ← add this
+    if re.search(r'\btable\.', t): return True    # ← add this
+    if re.search(r'\bet al\.', t): return True    # ← add this
     digit_ratio = sum(c.isdigit() for c in text) / max(len(text), 1)
     if digit_ratio > 0.3: return True
     return False
