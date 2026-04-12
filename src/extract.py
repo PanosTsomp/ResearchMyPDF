@@ -141,7 +141,8 @@ def _build_lines(doc: pymupdf.Document) -> list[dict]:
             if block["type"] != 0:
                 continue
             for line in block["lines"]:
-                text = " ".join(s["text"] for s in line["spans"]).strip()
+                text = " ".join(s["text"] for s in line["spans"])
+                text = " ".join(text.split())  # ← collapse spaces here
                 if not text:
                     continue
                 first = line["spans"][0]
@@ -322,18 +323,4 @@ if __name__ == "__main__":
     print(f"Methodology:  {result.methodology[:200]}\n")
     print(f"Results:      {result.results[:200]}\n")
     print(f"Conclusion:   {result.conclusion[:200]}\n")
-    print(f"All sections: {list(result.raw_sections.keys())}")
-
-
-if __name__ == "__main__":
-    doc = pymupdf.open("papers/GradCam.pdf")
-    body_size = _body_size(doc)
-    lines = _build_lines(doc)
-    
-    print(f"Body size detected: {body_size}")
-    print("\n--- Candidate headers ---")
-    for i, line in enumerate(lines):
-        score = _score_span(line["text"], line["size"], 
-                           line["is_bold"], body_size, _BASE_KEYWORDS)
-        if score >= 4:
-            print(f"Score {score} | Page {line['page']} | {line['text']}")
+    print(f"All sections found: {list(result.raw_sections.keys())}")
