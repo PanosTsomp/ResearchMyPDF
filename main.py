@@ -14,6 +14,7 @@ def run_pipeline(papers_dir: str = "papers", output_dir: str = "out") -> None:
     for pdf in pdfs:
         print(f"Processing: {pdf.name}")
         # Step 1 - extract
+        result = extract_sections("papers/s12903-022-02436-3.pdf")
         # Step 2 - summarize
         # Step 3 - export csv
         # Step 4 - export markdown
