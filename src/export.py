@@ -52,5 +52,5 @@ def export_markdown(summary: PaperSummary, output_dir: str = "out") -> None:
 **Confidence:** {summary.confidence}
     """
 
-output_path.write_text(content, encoding="utf-8")
-return
+    output_path.write_text(content, encoding="utf-8")
+    return

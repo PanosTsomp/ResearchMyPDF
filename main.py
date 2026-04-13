@@ -20,13 +20,13 @@ def run_pipeline(papers_dir: str = "papers", output_dir: str = "out") -> None:
             #summarize
             summary = summarize(sections, provider)
             #export csv
-            export_csv(summary,output_dir)
+            export_csv(summary,"{output_dir}/results.xlsx")
             #export markdown
             export_markdown(summary, output_dir)
             print(f"Done: {pdf.name}\n")
     except Exception as e:
         print(f"Failed: {pdf.name} — {e}\n")
-        continue
+        
 
 if __name__ == "__main__":
     run_pipeline()
