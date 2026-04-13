@@ -18,18 +18,37 @@ def export_csv(summary: PaperSummary, output_path: str = "out/results.xlsx") -> 
     }])
 
     if excel_path.is_file():
+        # open in append mode
         old_data = pd.read_excel(excel_path)
+        # write header only if new file
         combined = pd.concat([old_data, new_row], ignore_index=True)
         combined.to_excel(excel_path, index=False)
     else:
+        # write one row
         new_row.to_excel(excel_path, index=False)
-
-    # open in append mode
-    # write header only if new file
-    # write one row
     return
 
-def export_markdown(summary: PaperSummary, output_dir: str) -> None:
-    # create a filename from the title
-    # write the markdown content to out/
-    return
+
+def export_markdown(summary: PaperSummary, output_dir: str = "out") -> None:
+    # Step 1 - clean the title for use as filename
+    filename = re.sub(r'[^\w\s-]', '', summary.title)[:60].strip()
+    output_path = Path(output_dir) / f"{filename}.md"
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    # Step 2 - build the markdown string
+    content = f"""
+        ## {summary.title}
+
+        **Problem:** {summary.problem}
+
+        **Methodology:** {summary.methodology}
+
+        **Key Findings:** {summary.key_findings}
+
+        **Limitations:** {summary.limitations}
+
+        **Confidence:** {summary.confidence}
+    """
+
+output_path.write_text(content, encoding="utf-8")
+return
