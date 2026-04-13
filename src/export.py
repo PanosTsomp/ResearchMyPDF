@@ -31,24 +31,25 @@ def export_csv(summary: PaperSummary, output_path: str = "out/results.xlsx") -> 
 
 
 def export_markdown(summary: PaperSummary, output_dir: str = "out") -> None:
-    # Step 1 - clean the title for use as filename
+    # clean the title for use as filename
     filename = re.sub(r'[^\w\s-]', '', summary.title)[:60].strip()
     output_path = Path(output_dir) / f"{filename}.md"
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    # Step 2 - build the markdown string
+    #Markdown string
+
     content = f"""
-        ## {summary.title}
+## {summary.title}
 
-        **Problem:** {summary.problem}
+**Problem:** {summary.problem}
 
-        **Methodology:** {summary.methodology}
+**Methodology:** {summary.methodology}
 
-        **Key Findings:** {summary.key_findings}
+**Key Findings:** {summary.key_findings}
 
-        **Limitations:** {summary.limitations}
+**Limitations:** {summary.limitations}
 
-        **Confidence:** {summary.confidence}
+**Confidence:** {summary.confidence}
     """
 
 output_path.write_text(content, encoding="utf-8")
