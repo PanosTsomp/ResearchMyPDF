@@ -127,18 +127,18 @@ def summarize(sections: PaperSections, provider: LLMProvider) -> PaperSummary:
 # ---------------------------------------------------------------------------
 # Quick test
 # ---------------------------------------------------------------------------
-
+'''
 if __name__ == "__main__":
     from extract import extract_sections
     from providers.ollama_provider import OllamaProvider
 
-    sections = extract_sections("papers/LatIA_2025_117.pdf")
     provider = OllamaProvider()
-    summary = summarize(sections, provider)
 
-    print(f"Title:        {summary.title}\n")
-    print(f"Problem:      {summary.problem}\n")
-    print(f"Methodology:  {summary.methodology}\n")
-    print(f"Key Findings: {summary.key_findings}\n")
-    print(f"Limitations:  {summary.limitations}\n")
-    print(f"Confidence:   {summary.confidence}\n")
+    for pdf in ["papers/GradCam.pdf", "papers/LatIA_2025_117.pdf"]:
+        sections = extract_sections(pdf)
+        summary = summarize(sections, provider)
+        print(f"\n{'='*60}")
+        print(f"Title:      {summary.title[:80]}")
+        print(f"Problem:    {summary.problem[:150]}")
+        print(f"Confidence: {summary.confidence}")
+'''
