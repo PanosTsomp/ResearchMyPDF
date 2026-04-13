@@ -1,6 +1,7 @@
 #Takes the final structured output and writes it to the out/ folder
-import csv
+import re
 from pathlib import Path
+import pandas as pd
 from summarize import PaperSummary
 
 def export_csv(summary: PaperSummary, output_path: str = "out/results.xlsx") -> None:
